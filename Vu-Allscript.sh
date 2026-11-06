@@ -3,7 +3,18 @@
 # Vu+ Only - Novaler Plugins Skip
 clear; echo "Copyright (c) 2026 Eng / Ahmed Abdel-Moati - VU Only V1"; sleep 2
 P="/usr/script/allscript_progress.txt"; touch "$P"; DONE=$(cat "$P" 2>/dev/null); [ -z "$DONE" ] && DONE=0
-
+# ===== حماية PY2 - Python 3 Only =====
+PY3_VER="$(python3 --version 2>&1)"
+PY_VER="$(python --version 2>&1)"
+echo "Python Check: python3=[$PY3_VER] python=[$PY_VER]"
+IS_PY3=0
+echo "$PY3_VER" | grep -q "Python 3" && IS_PY3=1
+# لو مفيش python3 خالص، يبقى دي صورة PY2
+if [ ! -x /usr/bin/python3 ] && [ ! -x /usr/bin/python3.9 ] && [ ! -x /usr/bin/python3.10 ] && [ ! -x /usr/bin/python3.11 ] && [ ! -x /usr/bin/python3.12 ]; then IS_PY3=0; fi
+# لو الـ python الاساسي هو 2 ومفيش 3، اقف
+echo "$PY_VER" | grep -q "Python 2" && [ "$IS_PY3" = "0" ] && IS_PY3=0
+if [ "$IS_PY3" = "0" ]; then echo "=============================================="; echo "This Script Requires Python 3 Only"; echo "Your Image is Python 2 : $PY_VER"; echo "Stopped to protect your device - PY2 Not Supported"; echo "Please install Python 3 image - OpenATV 7.x / OpenPLi 8+ / Egami 10+"; echo "=============================================="; exit 1; fi
+echo "=> Python 3 Detected : $PY3_VER - Continue"
 # ===== كشف نوع الصورة =====
 get_image_raw() { cat /etc/image-version 2>/dev/null; echo ""; cat /etc/issue 2>/dev/null; echo ""; cat /etc/os-release 2>/dev/null; echo ""; cat /etc/version 2>/dev/null; echo ""; ls /etc/*atv* /etc/*egami* /etc/*pli* /etc/*vix* /etc/*bh* 2>/dev/null; }
 IMAGE_RAW="$(get_image_raw)"
